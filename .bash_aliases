@@ -32,6 +32,7 @@ alias scripts='cd /media/usb-ssd/scripts'
 alias syslog='cd /var/log'
 
 ## github
-alias gs='cd ~/semaphorepi'
+alias gse='cd ~/semaphorepi'
+alias gs='git status'
 alias ga='git add . && git commit -m aenderung && git push'
 alias gp='git pull'
