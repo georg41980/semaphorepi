@@ -1,20 +1,33 @@
 ---
-networks:
-  bridge:
+version: '3'
 services:
   homeassistant:
-    image: lscr.io/linuxserver/homeassistant:latest
     container_name: homeassistant
-    networks:
-      bridge:
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
+    image: "ghcr.io/home-assistant/home-assistant:stable"
     volumes:
       - /home/georg/data/homeassistant/data:/config
-    ports:
-      - 8123:8123 #optional
-    #devices:
-    #  - /path/to/device:/path/to/device #optional
+      - /etc/localtime:/etc/localtime:ro
+     # - /run/dbus:/run/dbus:ro
     restart: unless-stopped
+    privileged: true
+    network_mode: host
+
+    #networks:
+#  bridge:
+#services:
+ # homeassistant:
+  #  image: lscr.io/linuxserver/homeassistant:latest
+   # container_name: homeassistant
+   # networks:
+    #  bridge:
+   # environment:
+   #   - PUID=1000
+    #  - PGID=1000
+     # - TZ=Europe/Berlin
+   # volumes:
+   #   - /home/georg/data/homeassistant/data:/config
+  #  ports:
+  #    - 8123:8123 #optional
+  #  #devices:
+    ##  - /path/to/device:/path/to/device #optional
+   # restart: unless-stopped
