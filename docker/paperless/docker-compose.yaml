@@ -10,7 +10,7 @@ services:
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       CHROMIUM_DISABLE_ROUTES: 1
 
@@ -67,7 +67,7 @@ services:
       USERMAP_UID: 0
       USERMAP_GID: 0
       PAPERLESS_TIKA_ENABLED: "true"
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3001
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
       
 
