@@ -180,13 +180,11 @@
 
 
  #   - name: Benutzer anlegen und Berechtigung setzten
-🐧GNU/Linux 6.1.0-rpi8-rpi-2712 aarch64       📟Raspberry Pi 5 Model B Rev 1.0       💾3.8Gi/7.9Gi        ⏰14:10:59
   #    shell: cd /HDD/
 
 
    # - name: Benutzer anlegen und Berechtigung setzten
     #  shell: mkdir paperless
-🐧GNU/Linux 6.1.0-rpi8-rpi-2712 aarch64       📟Raspberry Pi 5 Model B Rev 1.0       💾3.8Gi/7.9Gi        ⏰14:11:00
 
    # - name: Benutzer anlegen und Berechtigung setzten
     #  shell: cd paperless/
