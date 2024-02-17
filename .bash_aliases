@@ -12,10 +12,10 @@ alias python='python3'
 
 # Custom OS
 alias lscron='cat /etc/crontab'
-alias modbash='sudo nano ~/.bashrc'
-alias modalias='sudo nano ~/.bash_aliases'
-alias modcron='sudo nano /etc/crontab'
-alias modenv='sudo nano /etc/environment'
+alias modbash='sudo nvim ~/.bashrc'
+alias modalias='sudo nvim ~/.bash_aliases'
+alias modcron='sudo nvim /etc/crontab'
+alias modenv='sudo nvim /etc/environment'
 alias shared='cd /media/usb-ssd/shared'
 
 
