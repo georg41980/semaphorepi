@@ -1,0 +1,192 @@
+- hosts: "pi"
+  become: true
+
+  vars:
+    PROJECT_DIR: "/home/docker/projects/paperless/"
+
+  tasks:
+
+    - name: Update python3-apt
+      become: yes
+      apt:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - build-essential
+        - tk-dev
+        - libncurses5-dev
+        - libncursesw5-dev
+        - libreadline6-dev
+        - libdb5.3-dev
+        - libgdbm-dev
+        - libsqlite3-dev
+        - libssl-dev
+        - libbz2-dev
+        - libexpat1-dev
+        - liblzma-dev
+        - zlib1g-dev
+        - libffi-dev
+
+    - name: Download Python 3.8
+      become: yes
+      get_url:
+        url: "https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz"
+        dest: "/tmp/Python-3.8.18.tgz"
+
+    - name: Extract Python 3.8
+      unarchive:
+        src: "/tmp/Python-3.8.18.tgz"
+        dest: "/tmp/python3.8"
+        remote_src: yes
+
+    - name: Configure and install Python 3.8
+      command: "chdir=/tmp/python3.8 ./configure --enable-optimizations && make && make install"
+        
+    - name: "install und update python3-apt"
+      shell: apt -y install python3-apt
+
+    - name: "Erzeugt venv für paperless"
+      shell: python3.8 -m venv /home/georg/venv/paperless
+
+    - name: Aktiviere venv für paperless
+      command: /bin/bash -c "source /home/georg/venv/paperless/bin/activate"
+      args:
+        chdir: /home/georg/venv/paperless/
+      environment:
+        VIRTUAL_ENV: /home/georg/venv/paperless/
+      become: no
+
+    - name: "filezilla installieren"
+      apt:
+        name: "filezilla"
+
+    - name: "proftpd-basic installieren"
+      apt:
+        name: "proftpd-basic"
+
+    - name: Erstelle und fülle eine Datei
+      ansible.builtin.copy:
+        content: |
+          <Global>
+            RequireValidShell off
+          </Global>
+          # If desired turn off IPv6
+          UseIPv6 off
+          # Default directory is ftpusers home
+          # DefaultRoot ~ ftpuser
+          # Limit login to the ftpuser group
+          <Limit LOGIN>
+            DenyGroup !ftpuser
+          </Limit>
+        dest: /etc/proftpd/conf.d/ftp.conf
+
+    - name: "restart proftpd"
+      shell: systemctl restart proftpd
+
+    - name: "add ftpuser group if it does not exist"
+      ansible.builtin.group:
+        name: ftpuser
+        state: present
+      ignore_errors: yes
+
+    - name: "userrechte auf paperless ausweiten"
+      shell: usermod -aG ftpuser paperless
+
+    - name: Erstelle für paperless-ngx redisdata Ordner
+      file:
+        path: /home/georg/data/paperless/redisdata
+        state: directory
+
+    - name: Erstelle für paperless-ngx data Ordner
+      file:
+        path: /home/georg/data/paperless/data
+        state: directory
+
+    - name: Ändere Eigentümer und Gruppe für paperless-ngx media Ordner
+      file:
+        path: /home/paperless/media
+        state: directory
+        owner: paperless
+        group: paperless
+
+    - name: Erstelle für paperless-ngx export Ordner
+      file:
+        path: /home/paperless/export
+        state: directory
+        owner: paperless
+        group: paperless
+
+    - name: Ändere Eigentümer und Gruppe für paperless-ngx consume Ordner
+      file:
+        path: /home/paperless/consume
+        state: directory
+        owner: paperless
+        group: paperless
+        mode: "0777"
+
+    - name: "Delete Old Project Directory"
+      file:
+        state: "absent"
+        path: "{{ PROJECT_DIR }}"  # Setzen Sie den Pfad hier entsprechend Ihrer Konfiguration
+
+    - name: "Copy Project Directory"
+      copy:
+        src: "./docker/paperless/"  # Stellen Sie sicher, dass der Quellpfad korrekt ist
+        dest: "{{ PROJECT_DIR }}"   # Setzen Sie den Zielordner entsprechend Ihrer Konfiguration
+
+    - name: "Init paperless"
+      docker_compose:
+        project_src: "{{ PROJECT_DIR }}"  # Setzen Sie den Pfad zum Docker-Compose-File
+        restarted: "yes"
+        pull: "yes"
+
+    - name: Ändere Eigentümer und Gruppe für paperless-ngx media Ordner und alle Unterordner
+      file:
+        path: /home/paperless/media
+        state: directory
+        owner: paperless
+        group: paperless
+        recurse: yes
+        
+    - name: Ändere Eigentümer und Gruppe für paperless-ngx export Ordner
+      file:
+        path: /home/paperless/export
+        state: directory
+        owner: paperless
+        group: paperless
+
+    - name: Ändere Eigentümer und Gruppe für paperless-ngx consume Ordner
+      file:
+        path: /home/paperless/consume
+        state: directory
+        owner: paperless
+        group: paperless
+        mode: "0777"
+
+#
+#    - name: Benutzer anlegen und Berechtigung setzten
+  #    shell: usermod -aG docker paperless
+
+
+   # - name: Benutzer anlegen und Berechtigung setzten
+    #  shell: usermod -aG sudo paperless
+
+  #  - name: Benutzer anlegen und Berechtigung setzten
+   #   shell: chmod -v 777 /HDD/
+
+
+  #  - name: Benutzer anlegen und Berechtigung setzten
+   #   shell: su paperless
+
+
+ #   - name: Benutzer anlegen und Berechtigung setzten
+🐧GNU/Linux 6.1.0-rpi8-rpi-2712 aarch64       📟Raspberry Pi 5 Model B Rev 1.0       💾3.8Gi/7.9Gi        ⏰14:10:59
+  #    shell: cd /HDD/
+
+
+   # - name: Benutzer anlegen und Berechtigung setzten
+    #  shell: mkdir paperless
+🐧GNU/Linux 6.1.0-rpi8-rpi-2712 aarch64       📟Raspberry Pi 5 Model B Rev 1.0       💾3.8Gi/7.9Gi        ⏰14:11:00
+
+   # - name: Benutzer anlegen und Berechtigung setzten
+    #  shell: cd paperless/
