@@ -4,9 +4,6 @@
   vars:
     PROJECT_DIR: "/home/docker/projects/gotify/"
 
-  vars_files:
-    - vault-pass.yml
-
   tasks:
 
     - name: "Delete Old Project Directory"
