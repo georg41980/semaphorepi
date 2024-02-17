@@ -33,5 +33,5 @@ alias syslog='cd /var/log'
 
 ## github
 alias gs='cd ~/semaphorepi'
-alias ga='git add . && git commmit -m aenderung && git push'
+alias ga='git add . && git commit -m aenderung && git push'
 alias gp='git pull'
