@@ -6,4 +6,4 @@
      copy:
         src=.bash_aliases
         dest="/home/georg/.bash_aliases"
-    tags: aliases
+     tags: aliases
