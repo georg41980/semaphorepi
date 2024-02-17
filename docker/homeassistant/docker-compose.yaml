@@ -1,4 +1,8 @@
 version: '3'
+networks:
+  bridge:
+  proxynet:
+    external: true
 services:
   homeassistant:
     container_name: homeassistant
