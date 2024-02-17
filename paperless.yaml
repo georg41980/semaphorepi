@@ -27,26 +27,26 @@
         - zlib1g-dev
         - libffi-dev
 
-    - name: Download Python 3.8
-      become: yes
-      get_url:
-        url: "https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz"
-        dest: "/tmp/Python-3.8.18.tgz"
+#    - name: Download Python 3.8
+#      become: yes
+#      get_url:
+ #       url: "https://www.python.org/ftp/python/3.8.18/Python-3.8.18.tgz"
+ #       dest: "/tmp/Python-3.8.18.tgz"
 
-    - name: Extract Python 3.8
-      unarchive:
-        src: "/tmp/Python-3.8.18.tgz"
-        dest: "/tmp/python3.8"
-        remote_src: yes
+  #  - name: Extract Python 3.8
+   #   unarchive:
+   #     src: "/tmp/Python-3.8.18.tgz"
+   #     dest: "/tmp/python3.8"
+   #     remote_src: yes
 
-    - name: Configure and install Python 3.8
-      command: "chdir=/tmp/python3.8 ./configure --enable-optimizations && make && make install"
+ #   - name: Configure and install Python 3.8
+  #    command: "chdir=/tmp/python3.8 ./configure --enable-optimizations && make && make install"
         
     - name: "install und update python3-apt"
       shell: apt -y install python3-apt
 
     - name: "Erzeugt venv für paperless"
-      shell: python3.8 -m venv /home/georg/venv/paperless
+      shell: python3.11 -m venv /home/georg/venv/paperless
 
     - name: Aktiviere venv für paperless
       command: /bin/bash -c "source /home/georg/venv/paperless/bin/activate"
