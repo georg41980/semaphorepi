@@ -30,3 +30,8 @@ alias dockermem="docker stats \$(docker ps | awk '{if(NR>1) print \$NF}')"
 alias logs='cd /media/usb-ssd/logs'
 alias scripts='cd /media/usb-ssd/scripts'
 alias syslog='cd /var/log'
+
+## github
+alias gs='cd ~/semaphorepi'
+alias ga='git add . && git commmit -m aenderung && git push'
+alias gp='git pull'
