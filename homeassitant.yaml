@@ -1,0 +1,36 @@
+- hosts: "pi"
+  
+  vars:
+    PROJECT_DIR: "/home/docker/projects/homeassistant/"
+
+  tasks:
+    - name: "Erzeugt venv für home_assistant"
+      shell: python3.12 -m venv /home/georg/venv/home_assistant
+
+    - name: Aktiviere venv für home_assistant
+      command: /bin/bash -c "source /home/georg/venv/home_assistant/bin/activate"
+      args:
+        chdir: /home/georg/venv/home_assistant/
+      environment:
+        VIRTUAL_ENV: /home/georg/venv/home_assistant/
+      become: no
+     
+    - name: Erstelle für homeassistant Ordner
+      file:
+        path: /home/georg/venv/home_assistant
+        state: directory
+        owner: georg
+        group: georg
+
+    - name: "Delete Old Project Directory"
+      become: true
+      file:
+        state: "absent"
+        path: "{{ PROJECT_DIR }}"  # Setzen Sie den Pfad hier entsprechend Ihrer Konfiguration
+
+    - name: "Copy Project Directory"
+      become: true
+      copy:
+        src: "./docker/homeassistant/"  # Stellen Sie sicher, dass der Quellpfad korrekt ist
+        dest: "{{ PROJECT_DIR }}"   # Setzen Sie den Zielordner entsprechend Ihrer Konfiguration
+
