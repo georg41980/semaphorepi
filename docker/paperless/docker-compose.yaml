@@ -38,6 +38,7 @@ services:
 
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:2.5.3
+    container_name: paperless-webserver
     restart: unless-stopped
     depends_on:
       - db
