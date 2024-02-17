@@ -1,0 +1,26 @@
+- hosts: "all"
+  become: true
+
+  vars:
+    PROJECT_DIR: "/home/docker/projects/gotify/"
+
+  vars_files:
+    - vault-pass.yml
+
+  tasks:
+
+    - name: "Delete Old Project Directory"
+      file:
+        state: "absent"
+        path: "{{ PROJECT_DIR }}"  # Setzen Sie den Pfad hier entsprechend Ihrer Konfiguration
+
+    - name: "Copy Project Directory"
+      copy:
+        src: "./docker/gotify/"  # Stellen Sie sicher, dass der Quellpfad korrekt ist
+        dest: "{{ PROJECT_DIR }}"   # Setzen Sie den Zielordner entsprechend Ihrer Konfiguration
+
+    - name: "Init gotify"
+      docker_compose:
+        project_src: "{{ PROJECT_DIR }}"  # Setzen Sie den Pfad zum Docker-Compose-File
+        restarted: "yes"
+        pull: "yes"
