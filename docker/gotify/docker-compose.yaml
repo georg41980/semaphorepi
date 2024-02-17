@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  gotify:
+    image: 'gotify/server-arm64:2.4'  # Aktualisieren Sie die Image-Version auf 2.4.x
+    container_name: 'gotify'
+    restart: unless-stopped
+    ports:
+      - '5888:80'
+    environment:
+      - 'GOTIFY_DEFAULTUSER_PASS=pass'
+    volumes:
+      - "/home/georg/data/gotify_data:/app/data"
