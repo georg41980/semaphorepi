@@ -1,4 +1,9 @@
 version: "3.4"
+
+networks:
+    internal:
+        external: false
+
 services:
   
   gotenberg:
@@ -9,6 +14,8 @@ services:
       - "gotenberg"
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
+    networks:
+       - internal
     ports:
       - 3001:3000
     environment:
@@ -17,6 +24,8 @@ services:
   tika:
     container_name: paperless-tika
     image: iwishiwasaneagle/apache-tika-arm:latest
+    networks:
+       - internal
     ports:
       - 9998:9998
     restart: unless-stopped
@@ -43,6 +52,8 @@ services:
     depends_on:
       - db
       - broker
+    networks:
+       - internal
     ports:
       - 8000:8000
     healthcheck:
