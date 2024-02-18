@@ -5,85 +5,103 @@ networks:
         external: false
 
 services:
-  
-  gotenberg:
-    image: gotenberg/gotenberg:latest
-    container_name: paperless-gotenberg
-    restart: unless-stopped
-    command:
-      - "gotenberg"
-      - "--chromium-disable-javascript=true"
-      - "--chromium-allow-list=file:///tmp/.*"
-    networks:
-       - internal
-    ports:
-      - 3001:3000
-    environment:
-      CHROMIUM_DISABLE_ROUTES: 1
+    broker:
+        container_name: paperless-redis
+        image: redis:7
+        networks:
+            - internal
+        restart: unless-stopped
 
-  tika:
-    container_name: paperless-tika
-    image: iwishiwasaneagle/apache-tika-arm:latest
-    networks:
-       - internal
-    ports:
-      - 9998:9998
-    restart: unless-stopped
+    db:
+        container_name: paperless-db
+        image: postgres:15
+        networks:
+            - internal
+        restart: unless-stopped
+        volumes:
+            - /home/georg/data/paperless/db:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: paperless
+            POSTGRES_USER: paperless
+            POSTGRES_PASSWORD: einPasswort
 
-  broker:
-    image: docker.io/library/redis:7
-    restart: unless-stopped
-    volumes:
-      - /home/georg/data/paperless/redisdata:/data
-  db:
-    image: docker.io/library/postgres:15
-    restart: unless-stopped
-    volumes:
-      - /home/georg/data/paperless/pgdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: paperless
-      POSTGRES_USER: paperless
-      POSTGRES_PASSWORD: paperless
+    webserver:
+        container_name: paperless
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        networks:
+            - internal
+        restart: unless-stopped
+        depends_on:
+            - db
+            - broker
+        ports:
+            - 8050:8000
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        volumes:
+            - /home/georg/data/paperless/data:/usr/src/paperless/data
+            - /home/paperless/media:/usr/src/paperless/media
+            - /home/paperless/export:/usr/src/paperless/export
+            - /home/paperless/consume:/usr/src/paperless/consume
+        environment:
+            PAPERLESS_REDIS: redis://broker:6379
+            PAPERLESS_DBHOST: db
+            PAPERLESS_DBPASS: einPasswort
+            USERMAP_UID: 0
+            USERMAP_GID: 0
+            PAPERLESS_SECRET_KEY: pa6lHUuc1W8PQWdsP6wXViH1cJoKV38zj9ixRkDeTv3Q0iX8O9pNdq9GVXIqH6gilf4uV18vVy5KTeLAvghbkBbZz9ZsF9g5jmx5
+            PAPERLESS_ALLOWED_HOSTS: "localhost,paperless.domain.de"
+            PAPERLESS_TIME_ZONE: Europe/Berlin
+            PAPERLESS_OCR_LANGUAGE: deu
+            PAPERLESS_FILENAME_FORMAT: "{created_year}/{correspondent}/{title}"
+            PAPERLESS_TIKA_ENABLED: 1
+            PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3001/forms/libreoffice/convert#
+            PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+            PAPERLESS_URL: "https://paperless.meinedomain.de"
 
-  webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.5
-    container_name: paperless-webserver
-    restart: unless-stopped
-    depends_on:
-      - db
-      - broker
-    networks:
-       - internal
-    ports:
-      - 8000:8000
-    healthcheck:
-      test: ["CMD", "curl", "-fs", "-S", "--max-time", "2", "http://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - /home/georg/data/paperless/data:/usr/src/paperless/data
-      - /home/paperless/media:/usr/src/paperless/media
-      - /home/paperless/export:/usr/src/paperless/export
-      - /home/paperless/consume:/usr/src/paperless/consume
-    environment:
-      PAPERLESS_REDIS: redis://broker:6379
-      PAPERLESS_DBHOST: db
-      PAPERLESS_SECRET_KEY: supergeheim
-      PAPERLESS_ADMIN_USER: Georg
-      PAPERLESS_ADMIN_PASSWORD: CRZJxTW7Qrbxws4ABq2CdXwttP3nYtvZhBqXhgcp
-      PAPERLESS_OCR_LANGUAGE: deu+eng
-      PAPERLESS_CONSUMER_DELETE_DUPLICATES: "true"
-      PAPERLESS_CONSUMER_POLLING: 30
-      USERMAP_UID: 0
-      USERMAP_GID: 0
-      PAPERLESS_TIKA_ENABLED: "true"
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3001
-      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-      
+    db-backup:
+        container_name: paperless-db-backup
+        image: postgres:15
+        volumes:
+            - /home/georg/data/paperless/db-backup:/dump
+            - /etc/localtime:/etc/localtime:ro
+        environment:
+            PGHOST: db
+            PGDATABASE: paperless
+            PGUSER: paperless
+            PGPASSWORD: paperless
+            BACKUP_NUM_KEEP: 10
+            BACKUP_FREQUENCY: 7d
+        entrypoint: |
+            bash -c 'bash -s <<EOF
+            trap "break;exit" SIGHUP SIGINT SIGTERM
+            sleep 2m
+            while /bin/true; do
+              pg_dump -Fc > /dump/dump_\`date +%d-%m-%Y"_"%H_%M_%S\`.psql
+              (ls -t /dump/dump*.psql|head -n $$BACKUP_NUM_KEEP;ls /dump/dump*.psql)|sort|uniq -u|xargs rm -- {}
+              sleep $$BACKUP_FREQUENCY
+            done
+            EOF'
+        networks:
+            - internal
 
-volumes:
-  data:
-  media:
-  pgdata:
-  redisdata: 
+    gotenberg:
+        image: gotenberg/gotenberg:8
+        restart: unless-stopped
+        environment:
+            CHROMIUM_DISABLE_ROUTES: 1
+        command:
+            - "gotenberg"
+            - "--chromium-disable-javascript=true"
+            - "--chromium-allow-list=file:///tmp/.*"
+        networks:
+            - internal
+
+    tika:
+        image: iwishiwasaneagle/apache-tika-arm:latest
+        restart: unless-stopped
+        networks:
+            - internal
