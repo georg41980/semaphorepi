@@ -36,7 +36,7 @@ services:
     volumes:
       - /home/georg/data/paperless/redisdata:/data
   db:
-    image: docker.io/library/postgres:13
+    image: docker.io/library/postgres:15
     restart: unless-stopped
     volumes:
       - /home/georg/data/paperless/pgdata:/var/lib/postgresql/data
@@ -46,7 +46,7 @@ services:
       POSTGRES_PASSWORD: paperless
 
   webserver:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.5.3
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.5
     container_name: paperless-webserver
     restart: unless-stopped
     depends_on:
