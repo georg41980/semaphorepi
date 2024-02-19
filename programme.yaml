@@ -1,20 +1,18 @@
 - hosts: "pi"
   tasks:
-
     - name: "Piapps installieren"
-        shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
-      
+      shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
+
     - name: Install python3-apt
-        become: true
-        apt:
-          name: python3-apt
-          state: present
+      become: true
+      apt:
+        name: python3-apt
+        state: present
 
     - name: "Pip3 installieren"
       become: true
       apt:
         name: "python3-pip"
-        # Aktualisiert zuvor die Paketquellen (entspricht apt update)
         update_cache: yes
 
     - name: "Docker-Compose installieren"
@@ -34,8 +32,7 @@
       args:
         creates: /usr/bin/docker
 
-    - name: Füge dem Benutzer "georg" die Berechtigung hinzu, Docker-Befehle
-        auszuführen
+    - name: Füge dem Benutzer "georg" die Berechtigung hinzu, Docker-Befehle auszuführen
       become: true
       shell: usermod -aG docker georg
 
@@ -53,4 +50,3 @@
       become: true
       apt:
         name: "nmap"
-
