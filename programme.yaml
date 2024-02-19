@@ -1,3 +1,4 @@
+---
 - hosts: "pi"
   tasks:
     - name: "Piapps installieren"
