@@ -52,4 +52,4 @@
         name: "nmap"
 
     - name: "Piapps installieren"
-      shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
+      shell: wget  https://raw.githubusercontent.com/Botspot/pi-apps/master/install -O install.sh && bash install.sh 
