@@ -44,5 +44,4 @@
         name: "nmap"
 
     - name: "Piapps installieren"
-      apt:
-        name: wget https://raw.githubusercontent.com/Bot... | bash
+      shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
