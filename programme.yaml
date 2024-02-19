@@ -45,4 +45,4 @@
 
     - name: "Piapps installieren"
       apt:
-        name: wget qO https://raw.githubusercontent.com/Bot... | bash
+        name: wget https://raw.githubusercontent.com/Bot... | bash
