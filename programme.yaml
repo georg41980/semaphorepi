@@ -1,45 +1,53 @@
 - hosts: "pi"
-  become: true
   tasks:
 
     - name: Install python3-apt
+      become: true
       apt:
         name: python3-apt
         state: present
 
     - name: "Pip3 installieren"
+      become: true
       apt:
         name: "python3-pip"
         # Aktualisiert zuvor die Paketquellen (entspricht apt update)
         update_cache: yes
 
     - name: "Docker-Compose installieren"
+      become: true
       apt:
         name: "docker-compose"
 
     - name: Hole das Docker-Installationsskript
+      become: true
       shell: curl -fsSL https://get.docker.com -o get-docker.sh
       args:
         creates: /home/georg/get-docker.sh
 
     - name: Führe das Docker-Installationsskript aus
+      become: true
       shell: sh /home/georg/get-docker.sh
       args:
         creates: /usr/bin/docker
 
     - name: Füge dem Benutzer "georg" die Berechtigung hinzu, Docker-Befehle
         auszuführen
+      become: true
       shell: usermod -aG docker georg
 
     - name: "Nano installieren"
+      become: true
       apt:
         name: "nano"
 
     - name: "Code installieren"
+      become: true
       apt:
         name: "code"
 
     - name: "Nmap installieren"
+      become: true
       apt:
         name: "nmap"
 
