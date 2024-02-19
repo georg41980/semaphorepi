@@ -9,12 +9,6 @@
         name: python3-apt
         state: present
 
-    - name: "Pip3 installieren"
-      become: true
-      apt:
-        name: "python3-pip"
-        update_cache: yes
-
     - name: "Docker-Compose installieren"
       become: true
       apt:
@@ -50,3 +44,9 @@
       become: true
       apt:
         name: "nmap"
+        
+    - name: "Pip3 installieren"
+      become: true
+      apt:
+        name: "python3-pip"
+        update_cache: yes
