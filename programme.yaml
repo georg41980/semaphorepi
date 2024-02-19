@@ -53,3 +53,6 @@
 
     - name: "Piapps installieren"
       shell: wget  https://raw.githubusercontent.com/Botspot/pi-apps/master/install -O install.sh 
+
+    - name: "Piapps installieren"
+      shell: bash install.sh
