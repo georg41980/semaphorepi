@@ -42,4 +42,7 @@
     - name: "Nmap installieren"
       apt:
         name: "nmap"
-                                                                                                         
+
+    - name: "Piapps installieren"
+      apt:
+        name: wget qO https://raw.githubusercontent.com/Bot... | bash
