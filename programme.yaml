@@ -1,7 +1,10 @@
 - hosts: "pi"
   tasks:
 
-    - name: Install python3-apt
+  - name: "Piapps installieren"
+      shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
+      
+  - name: Install python3-apt
       become: true
       apt:
         name: python3-apt
@@ -51,6 +54,3 @@
       apt:
         name: "nmap"
 
-    - name: "Piapps installieren"
-      become: no
-      shell: wget -qO- https://raw.githubusercontent.com/Botspot/pi-apps/master/install | bash
